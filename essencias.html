@@ -934,20 +934,25 @@
 
   <div class="params-bar">
     <div class="param-group">
-      <label class="param-label">Estratégia de demanda</label>
-      <select class="param-input" id="paramVenda" style="width: 200px;">
-        <option value="pico6_m3">MAX(M3, pico 6M) — conservador</option>
-        <option value="pico6">Pico dos 6 últimos meses</option>
-        <option value="m3" selected>Média 3 meses</option>
-        <option value="m6">Média 6 meses</option>
-        <option value="m1">Último mês</option>
-      </select>
+      <label class="param-label">Projeção sobre média 3M</label>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <input class="param-input" id="paramProjecao" type="number" min="0" max="500" step="1" style="width: 92px;" value="30">
+        <span style="color:var(--text-muted);">%</span>
+      </div>
     </div>
+    <div class="param-group" style="margin-left:14px;">
+      <label class="param-label">Cobertura</label>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <input class="param-input" id="paramCobertura" type="number" min="1" max="365" step="1" style="width: 92px;" value="45">
+        <span style="color:var(--text-muted);">dias</span>
+      </div>
+    </div>
+    <input type="hidden" id="paramVenda" value="m3">
     <button class="btn btn-gold" id="btnSimularCobertura" style="margin-left: 14px;">🔮 Simular cobertura</button>
     <div style="flex: 1;"></div>
-    <div style="font-size: 12px; color: var(--text-muted); max-width: 460px; text-align: right;">
-      💡 Calcula: <b>(venda em 45 dias × 1,25) − (estoque essência + pedido aberto + compras em andamento + estoque PA convertido)</b>.<br>
-      <span style="color: var(--text-dim);">Estoque-alvo: 45 dias de venda + 25% de buffer de segurança.</span>
+    <div style="font-size: 12px; color: var(--text-muted); max-width: 480px; text-align: right;">
+      💡 Calcula: <b>(média 3 meses × (1 + projeção%) × cobertura/30) − (estoque essência + pedido aberto + compras em andamento + estoque PA convertido)</b>.<br>
+      <span style="color: var(--text-dim);">Ajuste a projeção e a cobertura acima — recalcula na hora e fica salvo.</span>
     </div>
   </div>
 
@@ -1065,7 +1070,7 @@
 <div class="modal-backdrop" id="modalSimular">
   <div class="modal" style="max-width: 1100px;">
     <div class="modal-title">🔮 Simulação de Cobertura</div>
-    <div class="modal-sub">Calcula quanto comprar pra cobrir o período escolhido <b>+ 25% de buffer de segurança</b>. Considera estoque atual + pedidos abertos + compras em andamento + PA equivalente.</div>
+    <div class="modal-sub">Calcula quanto comprar pra cobrir o período escolhido sobre a <b>demanda projetada (média 3 meses + 30%)</b>. Considera estoque atual + pedidos abertos + compras em andamento + PA equivalente.</div>
 
     <div style="display: flex; gap: 8px; align-items: center; margin: 18px 0 12px; flex-wrap: wrap;">
       <span style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-right: 8px;">Cobertura desejada:</span>
@@ -1429,6 +1434,8 @@ const state = {
   venda: {},          // {sku: {m1, m3, m6, pico6, meses}} -- SELL-IN (do PBI)
   vendaSellOut: {},   // {sku: {m1, m3, m6, pico6, meses}} -- SELL-OUT (mesma estrutura)
   filtroEmpresa: 'ambas', // 'Touti' | 'Yes' | 'ambas' — filtro global persistido
+  paramProjecaoPct: 30,   // % adicionado sobre a média de 3 meses (projeção)
+  paramCoberturaDias: 45, // dias de venda que a compra deve cobrir
   engenharia: {},     // {produtoSku: [{sku, nome, qtd, unidade}]}  -- BOM (lista de insumos por produto)
   insumos: {},        // {sku: {nome, categoria, estoque, unidade}} -- estoque de embalagens/dados/selos/papelaria
   ordensProducao: [], // [{id, produtoSku, qtdSolicitada, qtdViavel, limitadorSku, criadoEm, status, observacoes}]
@@ -1745,7 +1752,7 @@ function badgeCurva(curva) {
 
 async function loadState() {
   try {
-    const keys = ['essencias','produtos','estoque','venda','vendaSellOut','filtroEmpresa','lastUpdate','engenharia','insumos','ordensProducao','opsEmProducao','comprasEmAndamento','snapshots','syncConfig'];
+    const keys = ['essencias','produtos','estoque','venda','vendaSellOut','filtroEmpresa','paramProjecaoPct','paramCoberturaDias','lastUpdate','engenharia','insumos','ordensProducao','opsEmProducao','comprasEmAndamento','snapshots','syncConfig'];
     for (const k of keys) {
       try {
         const r = await window.storage.get(k);
@@ -2511,23 +2518,12 @@ function computeAnalise() {
   //
   //   COMPRAR = max(0, DEMANDA_PERÍODO − DISPONÍVEL)
   //
-  // O parâmetro 'Métrica de Venda' agora controla a ESTRATÉGIA:
-  //   - 'pico6_m3' (default, conservador): MAX(M3, pico6) — protege contra sazonalidade E tendência
-  //   - 'pico6': só pico dos 6 últimos meses
-  //   - 'm3': só média 3 meses
-  //   - 'm6': só média 6 meses
-  //   - 'm1': só último mês
-
-  const vendaCol = document.getElementById('paramVenda').value;
-  const calcGiro = (v) => {
-    if (!v) return 0;
-    if (vendaCol === 'm1') return v.m1 || 0;
-    if (vendaCol === 'm3') return v.m3 || 0;
-    if (vendaCol === 'm6') return v.m6 || 0;
-    if (vendaCol === 'pico6') return v.pico6 || 0;
-    // Default 'pico6_m3': MAX entre média 3 meses e pico dos 6 últimos
-    return Math.max(v.m3 || 0, v.pico6 || 0);
-  };
+  // REGRA (parâmetros configuráveis na barra da tela, persistidos):
+  //   giro_mensal = média dos últimos 3 meses (M3) × (1 + projeção%)
+  //   Essa projeção é a base de TUDO: demanda mensal, demanda do período,
+  //   dias de cobertura e status — todos na mesma base projetada.
+  const PROJECAO = 1 + (Number(state.paramProjecaoPct) || 0) / 100; // ex.: 30% -> 1,30
+  const calcGiro = (v) => v ? (v.m3 || 0) * PROJECAO : 0;
 
   const out = [];
   for (const ess of state.essencias) {
@@ -2570,13 +2566,11 @@ function computeAnalise() {
       });
     }
 
-    // Regra: 45 dias de venda + buffer de segurança de 25%
-    // Sempre usa M3 como base do buffer (média estável dos últimos 3 meses).
-    // O buffer entra SÓ na demanda do período (cálculo de compra), não na demanda
-    // mensal — assim o DoH continua refletindo a venda real.
-    const DIAS_ALVO = 45;
-    const BUFFER_SEGURANCA = 0.25; // 25%
-    const demandaPeriodoG = demandaMes * (DIAS_ALVO / 30) * (1 + BUFFER_SEGURANCA);
+    // Estoque-alvo: N dias da demanda PROJETADA (configurável na barra da tela).
+    // A projeção (%) já está embutida na demanda mensal (calcGiro), então não há
+    // buffer adicional aqui — a projeção É o buffer.
+    const DIAS_ALVO = Number(state.paramCoberturaDias) || 45;
+    const demandaPeriodoG = demandaMes * (DIAS_ALVO / 30);
 
     const estoqueEssG = ess.estoqueG || 0;
     const pedidoG = ess.pedidoAbertoG || 0;
@@ -4941,13 +4935,9 @@ function renderMudancas() {
 let _simDiasAtual = 90;
 
 function calcularSimulacaoCobertura(dias) {
-  // Estratégia de demanda: usa a mesma do select atual da página
-  const vendaCol = document.getElementById('paramVenda')?.value || 'm3';
-  const calcGiro = (v) => {
-    if (!v) return 0;
-    if (vendaCol === 'pico6_m3') return Math.max(v.m3 || 0, v.pico6 || 0);
-    return v[vendaCol] || 0;
-  };
+  // Mesma projeção configurável da compra (média 3 meses + projeção%).
+  const PROJECAO = 1 + (Number(state.paramProjecaoPct) || 0) / 100;
+  const calcGiro = (v) => v ? (v.m3 || 0) * PROJECAO : 0;
 
   const resultados = [];
   state.essencias.forEach(ess => {
@@ -4990,9 +4980,8 @@ function calcularSimulacaoCobertura(dias) {
 
     if (demandaMensalG <= 0) return; // pula essências sem demanda
 
-    // Mesma regra: demanda do período + 25% buffer de segurança
-    const BUFFER_SEGURANCA = 0.25;
-    const demandaPeriodoG = (demandaMensalG / 30) * dias * (1 + BUFFER_SEGURANCA);
+    // Demanda do período: dias × demanda diária projetada (M3 + 30% já embutido).
+    const demandaPeriodoG = (demandaMensalG / 30) * dias;
     const estoqueG = ess.estoqueG || 0;
     const pedidoG = ess.pedidoAbertoG || 0;
     const comprasAtivasG = getComprasAtivasPorEss(ess.sku);
@@ -5337,7 +5326,7 @@ function _renderAnaliseInner() {
     `;
     if (isExp) {
       html += `<tr class="detail-row"><td colspan="15">
-        <div class="detail-title">Composição · ${r.qtdProdutos} produto(s) · estoque-alvo de ${r.diasTotal} dias + 25% buffer</div>
+        <div class="detail-title">Composição · ${r.qtdProdutos} produto(s) · estoque-alvo de ${r.diasTotal} dias · demanda = média 3M + 30%</div>
         <div style="display:grid; grid-template-columns: 2fr 90px 60px 110px 80px 110px; gap:6px 12px; font-size:12px; padding:6px 0;">
           <div class="h">PRODUTO</div>
           <div class="h" style="text-align:right">GIRO/MÊS</div>
@@ -5355,7 +5344,7 @@ function _renderAnaliseInner() {
           ).join('')}
         </div>
         <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted);">
-          <b>Cálculo:</b> Demanda/mês = ${fmt(r.demandaMesG)}g · Demanda no período (${r.diasTotal}d + 25% buffer) = ${fmt(r.demandaG)}g
+          <b>Cálculo:</b> Demanda/mês projetada (M3 + 30%) = ${fmt(r.demandaMesG)}g · Demanda no período (${r.diasTotal}d) = ${fmt(r.demandaG)}g
           &nbsp;|&nbsp;
           <b>Disponível:</b> ${fmt(r.estoqueG)}g essência + ${fmt(r.pedidoAbertoG)}g pedido + ${fmt(r.estoquePaEquivalenteG)}g PA eq. = ${fmt(r.disponivelG)}g
           ${r.comprarG > 0 ? `&nbsp;|&nbsp; <b style="color: var(--danger)">Faltam ${fmt(r.comprarG)}g (${fmt(r.comprarKg, 1)} kg) → COMPRAR</b>` : '&nbsp;|&nbsp; <b style="color: var(--ok)">Cobertura OK</b>'}
@@ -7670,7 +7659,7 @@ Foi salvo na sua pasta Downloads.
   // ===== ABA 1: RESUMO POR ESSÊNCIA =====
   const resumo = [
     ['COMPRA DE ESSÊNCIAS — ' + new Date().toLocaleString('pt-BR')],
-    ['Cálculo: 45 dias de venda + 25% buffer de segurança'],
+    ['Cálculo: 45 dias da demanda projetada (média 3 meses + 30%)'],
     [],
     ['SKU', 'Essência', 'Fornecedor',
      'Estoque (g)', 'Pedido aberto (g)', 'Compras em andamento (g)', 'PA equivalente (g)',
@@ -7790,6 +7779,39 @@ document.querySelectorAll('.tab[data-filter]').forEach(t => t.onclick = () => {
 (document.getElementById('searchProd')||{}).oninput = renderProdTable;
 (document.getElementById('filterCategoria')||{}).onchange = renderProdTable;
 (document.getElementById('paramVenda')||{}).onchange = renderAnalise;
+
+// ===== PARÂMETROS EDITÁVEIS: projeção (%) e cobertura (dias) =====
+function syncParamsCompraInputs(){
+  const elProj = document.getElementById('paramProjecao');
+  const elCob  = document.getElementById('paramCobertura');
+  if (elProj) elProj.value = (state.paramProjecaoPct ?? 30);
+  if (elCob)  elCob.value  = (state.paramCoberturaDias ?? 45);
+}
+(function bindParamsCompra(){
+  const elProj = document.getElementById('paramProjecao');
+  const elCob  = document.getElementById('paramCobertura');
+  syncParamsCompraInputs();
+  function aplicarProj(){
+    let v = Number(elProj.value);
+    if (!isFinite(v) || v < 0) v = 0;
+    if (v > 500) v = 500;
+    elProj.value = v;
+    state.paramProjecaoPct = v;
+    saveEntity('paramProjecaoPct');
+    renderAnalise();
+  }
+  function aplicarCob(){
+    let v = Math.round(Number(elCob.value));
+    if (!isFinite(v) || v < 1) v = 1;
+    if (v > 365) v = 365;
+    elCob.value = v;
+    state.paramCoberturaDias = v;
+    saveEntity('paramCoberturaDias');
+    renderAnalise();
+  }
+  if (elProj) elProj.onchange = aplicarProj;
+  if (elCob)  elCob.onchange  = aplicarCob;
+})();
 document.querySelectorAll('th[data-sort]').forEach(th => th.onclick = () => {
   const k = th.dataset.sort;
   if (state.sortKey === k) state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
@@ -8932,6 +8954,7 @@ if (btnVoltarNav) btnVoltarNav.onclick = voltarNav;
 // ===== INIT =====
 (async () => {
   await loadState();
+  syncParamsCompraInputs();
   bindDropzones();
   updateStamp();
   recalcularCurvaABC();
