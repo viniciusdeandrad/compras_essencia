@@ -1040,6 +1040,10 @@
       </div>
     </div>
 
+    <div style="margin: 0 0 14px 0;">
+      <input type="text" class="param-input" id="comprasSearch" placeholder="🔍 Buscar por SKU, essência, fornecedor ou observação…" style="width: 100%; max-width: 440px;" autocomplete="off">
+    </div>
+
     <div id="comprasListaWrap">
       <div id="comprasEmpty" class="empty">
         <div class="empty-title">Nenhuma compra em andamento</div>
@@ -5160,14 +5164,34 @@ function renderComprasAndamento() {
 
   if (ativas.length === 0) {
     empty.classList.remove('hidden');
+    empty.querySelector('.empty-title').textContent = 'Nenhuma compra em andamento';
     tbl.classList.add('hidden');
+    const tb0 = document.getElementById('comprasTbody'); if (tb0) tb0.innerHTML = '';
+    return;
+  }
+
+  // Filtro de busca (SKU, essência, fornecedor, observações) — sem acento/maiúsculas
+  const termo = norm((document.getElementById('comprasSearch')||{}).value || '');
+  const visiveis = !termo ? ativas : ativas.filter(c => {
+    const ess = state.essencias.find(e => e.sku === c.essenciaSku);
+    const nome = ess?.nome || c.essenciaNome || '';
+    const forn = c.fornecedor || ess?.fornecedor || '';
+    const alvo = norm(`${c.essenciaSku} ${nome} ${forn} ${c.observacoes || ''}`);
+    return alvo.includes(termo);
+  });
+
+  if (visiveis.length === 0) {
+    empty.classList.remove('hidden');
+    empty.querySelector('.empty-title').textContent = `Nenhum resultado para "${(document.getElementById('comprasSearch')||{}).value}"`;
+    tbl.classList.add('hidden');
+    const tb1 = document.getElementById('comprasTbody'); if (tb1) tb1.innerHTML = '';
     return;
   }
   empty.classList.add('hidden');
   tbl.classList.remove('hidden');
 
   const tbody = document.getElementById('comprasTbody');
-  tbody.innerHTML = ativas.map(c => {
+  tbody.innerHTML = visiveis.map(c => {
     const ess = state.essencias.find(e => e.sku === c.essenciaSku);
     const nome = ess?.nome || c.essenciaNome || '(não cadastrada)';
     const forn = c.fornecedor || ess?.fornecedor || '—';
@@ -6825,6 +6849,7 @@ function abrirModalNovaCompra(skuPreselect, qtdKgPreselect) {
 }
 
 (document.getElementById('btnNovaCompra')||{}).onclick = () => abrirModalNovaCompra();
+(document.getElementById('comprasSearch')||{}).oninput = () => renderComprasAndamento();
 
 // ===== HANDLERS: SIMULAÇÃO DE COBERTURA =====
 (document.getElementById('btnSimularCobertura')||{}).onclick = () => {

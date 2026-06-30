@@ -17,7 +17,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 60000,
       "pedidoAbertoG": 0
     },
     {
@@ -27,7 +27,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 60000,
       "pedidoAbertoG": 0
     },
     {
@@ -77,7 +77,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 60000,
       "pedidoAbertoG": 0
     },
     {
@@ -107,7 +107,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 60000,
       "pedidoAbertoG": 0
     },
     {
@@ -137,7 +137,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 60000,
       "pedidoAbertoG": 0
     },
     {
@@ -177,7 +177,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 60000,
       "pedidoAbertoG": 0
     },
     {
@@ -227,7 +227,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 60000,
       "pedidoAbertoG": 0
     },
     {
@@ -417,7 +417,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 60000,
       "pedidoAbertoG": 0
     },
     {
@@ -477,7 +477,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 60000,
       "pedidoAbertoG": 0
     },
     {
@@ -557,7 +557,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 60000,
       "pedidoAbertoG": 0
     },
     {
@@ -577,7 +577,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 3100,
+      "estoqueG": 63100,
       "pedidoAbertoG": 0
     },
     {
@@ -627,7 +627,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 60000,
       "pedidoAbertoG": 0
     },
     {
@@ -747,7 +747,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 100000,
       "pedidoAbertoG": 0
     },
     {
@@ -917,7 +917,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 60000,
       "pedidoAbertoG": 0
     },
     {
@@ -987,7 +987,7 @@
       "leadTime": 20,
       "producao": 15,
       "cobertura": 30,
-      "estoqueG": 0,
+      "estoqueG": 100000,
       "pedidoAbertoG": 0
     },
     {
@@ -12415,30 +12415,6 @@
   "opsEmProducao": [],
   "comprasEmAndamento": [
     {
-      "id": "COMP-1782473179314-617",
-      "essenciaSku": 617,
-      "essenciaNome": "HIPICA AL",
-      "qtdComprada": 60000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-07",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:26:19.314Z"
-    },
-    {
-      "id": "COMP-1782473206596-439",
-      "essenciaSku": 439,
-      "essenciaNome": "LADY GOLD PLUS",
-      "qtdComprada": 60000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-07",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:26:46.596Z"
-    },
-    {
       "id": "COMP-1782473224380-4851",
       "essenciaSku": 4851,
       "essenciaNome": "DIORELA NEW LPV II",
@@ -12449,42 +12425,6 @@
       "observacoes": "",
       "status": "aberta",
       "criadoEm": "2026-06-26T11:27:04.380Z"
-    },
-    {
-      "id": "COMP-1782473241154-2779",
-      "essenciaSku": 2779,
-      "essenciaNome": "LUXURY OUD",
-      "qtdComprada": 60000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-07",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:27:21.154Z"
-    },
-    {
-      "id": "COMP-1782473248355-841",
-      "essenciaSku": 841,
-      "essenciaNome": "MY PARIS",
-      "qtdComprada": 60000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-07",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:27:28.355Z"
-    },
-    {
-      "id": "COMP-1782473257322-3225",
-      "essenciaSku": 3225,
-      "essenciaNome": "CALIFORNIA PLUS IFR",
-      "qtdComprada": 60000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-07",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:27:37.322Z"
     },
     {
       "id": "COMP-1782473317765-2736",
@@ -12511,114 +12451,6 @@
       "criadoEm": "2026-06-26T11:28:49.870Z"
     },
     {
-      "id": "COMP-1782473340900-1942",
-      "essenciaSku": 1942,
-      "essenciaNome": "BELA VIDA INTENSA",
-      "qtdComprada": 60000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-17",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:29:00.900Z"
-    },
-    {
-      "id": "COMP-1782473520881-4041",
-      "essenciaSku": 4041,
-      "essenciaNome": "ACQUA MEN PROFONDO BRT",
-      "qtdComprada": 60000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-17",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:32:00.881Z"
-    },
-    {
-      "id": "COMP-1782473529917-836",
-      "essenciaSku": 836,
-      "essenciaNome": "BAD BOY",
-      "qtdComprada": 60000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-17",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:32:09.917Z"
-    },
-    {
-      "id": "COMP-1782473539945-1294",
-      "essenciaSku": 1294,
-      "essenciaNome": "CREED AVENTUS LPV RTB",
-      "qtdComprada": 60000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-17",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:32:19.945Z"
-    },
-    {
-      "id": "COMP-1782473550705-7265",
-      "essenciaSku": 7265,
-      "essenciaNome": "BLACK HORSE AL",
-      "qtdComprada": 60000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-17",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:32:30.705Z"
-    },
-    {
-      "id": "COMP-1782473587668-1269",
-      "essenciaSku": 1269,
-      "essenciaNome": "TWO ONE TO MEN POWER",
-      "qtdComprada": 60000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-07",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:33:07.668Z"
-    },
-    {
-      "id": "COMP-1782473609184-3777",
-      "essenciaSku": 3777,
-      "essenciaNome": "VOLL PARFUM MAGNETIC LOVE",
-      "qtdComprada": 100000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-17",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:33:29.184Z"
-    },
-    {
-      "id": "COMP-1782473672022-670",
-      "essenciaSku": 670,
-      "essenciaNome": "PRIVATY PARTY ROSE BRT",
-      "qtdComprada": 100000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-17",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:34:32.022Z"
-    },
-    {
-      "id": "COMP-1782473680618-2476",
-      "essenciaSku": 2476,
-      "essenciaNome": "ACQUA MEN PLUS AL",
-      "qtdComprada": 60000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-26",
-      "dataPrevistaEntrega": "2026-07-17",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-26T11:34:40.618Z"
-    },
-    {
       "id": "COMP-1782745183668-394",
       "essenciaSku": 394,
       "essenciaNome": "SILVER",
@@ -12641,18 +12473,6 @@
       "observacoes": "",
       "status": "aberta",
       "criadoEm": "2026-06-29T15:00:21.033Z"
-    },
-    {
-      "id": "COMP-1782745252386-2126",
-      "essenciaSku": 2126,
-      "essenciaNome": "MAJESTIC LPV",
-      "qtdComprada": 60000,
-      "fornecedor": "Vollmens",
-      "dataPedido": "2026-06-29",
-      "dataPrevistaEntrega": "2026-07-29",
-      "observacoes": "",
-      "status": "aberta",
-      "criadoEm": "2026-06-29T15:00:52.386Z"
     },
     {
       "id": "COMP-1782745260140-5180",
@@ -25663,5 +25483,5 @@
     "insumos": null,
     "vendaSellOut": "2026-06-29T13:19:08.828Z"
   },
-  "exportedAt": "2026-06-29T15:28:41.004Z"
+  "exportedAt": "2026-06-30T19:01:21.467Z"
 }
